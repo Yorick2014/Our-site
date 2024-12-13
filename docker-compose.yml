@@ -8,8 +8,20 @@ services:
     volumes:
       - ./app:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      DB_HOST: 192.168.0.81
+      DB_PORT: 5432
+      DB_NAME: main_db
+      DB_USER: main_user
+      DB_PASSWORD: main_password
 
   php-fpm:
-    image: php:7.4-fpm
+    image: moraat/oursite-php-fpm-with-psql:latest
     volumes:
       - ./app:/var/www/html
+    environment:
+      DB_HOST: 192.168.0.81
+      DB_PORT: 5432
+      DB_NAME: main_db
+      DB_USER: main_user
+      DB_PASSWORD: main_password
