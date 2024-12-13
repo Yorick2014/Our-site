@@ -8,7 +8,22 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
     exit;
 }
 
+// Подключение к базе данных
+$host = getenv('DB_HOST');
+$dbname = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
+$pdo = new PDO("pgsql:host=$host;dbname=$dbname", $user, $password);
+
+// Получаем имя пользователя из сессии
 $username = htmlspecialchars($_SESSION['username']); // Безопасный вывод имени пользователя
+
+// Получаем роль пользователя из базы данных
+$stmt = $pdo->prepare('SELECT role FROM "users" WHERE "username" = :username');
+$stmt->execute(['username' => $username]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$role = $user ? $user['role'] : 'неизвестная'; // Если пользователь не найден, роль "неизвестная"
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +39,6 @@ $username = htmlspecialchars($_SESSION['username']); // Безопасный в�
     <?php if ($role === 'admin'): ?>
         <a href="admin.php">Админ-панель</a>
     <?php endif; ?>
-
 
     <a href="logout.php">Выйти</a> <!-- Ссылка для выхода -->
 </body>
